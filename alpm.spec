@@ -126,6 +126,11 @@ rm -rf $RPM_BUILD_ROOT
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/{,pacman-}vercmp
 %{__mv} $RPM_BUILD_ROOT%{_mandir}/man8/{,pacman-}vercmp.8
 
+# "Spanish (Latin America)" - clone to individual countries or provide es_419 as common?
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/es_419
+# less complete version of eu
+%{__rm} -r $RPM_BUILD_ROOT%{_localedir}/eu_ES
+
 %find_lang libalpm
 %find_lang pacman
 %find_lang pacman-scripts
