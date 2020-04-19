@@ -1,14 +1,14 @@
 Summary:	Pacman - simple library-based package manager (from Arch Linux)
 Summary(pl.UTF-8):	Pacman - prosty, oparty na bibliotece zarządca pakietów (z Arch Linuksa)
 Name:		alpm
-Version:	5.1.1
+Version:	5.2.1
 Release:	0.1
 License:	GPL v2+
 Group:		Libraries
 Source0:	https://sources.archlinux.org/other/pacman/pacman-%{version}.tar.gz
-# Source0-md5:	4da799005fe4d8c6f13fd80a4f67e96f
+# Source0-md5:	730f7f3699bd1778ca8d8126e3da68f4
 URL:		https://www.archlinux.org/pacman/
-BuildRequires:	bash >= 4.1.0
+BuildRequires:	bash >= 4.4.0
 BuildRequires:	autoconf >= 2.64
 BuildRequires:	automake >= 1:1.11
 BuildRequires:	curl-devel >= 7.32.0
@@ -19,8 +19,10 @@ BuildRequires:	libtool >= 2:2
 BuildRequires:	openssl-devel
 BuildRequires:	perl-base >= 1:5.10.1
 BuildRequires:	pkgconfig
-BuildRequires:	python >= 1:2.7
+BuildRequires:	python3 >= 1:3.2
+BuildRequires:	rpmbuild(macros) >= 1.673
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:	bash >= 4.4.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -36,7 +38,7 @@ Summary:	Bash completion for Arch Linux Package Manager (Pacman)
 Summary(pl.UTF-8):	Bashowe dopełnianie parametrów dla zarządcy pakietów Arch Linuksa (Pacmana)
 Group:		Applications/Shells
 Requires:	%{name} = %{version}-%{release}
-Requires:	bash-completion
+Requires:	bash-completion >= 2.0
 
 %description -n bash-completion-alpm
 Bash completion for Arch Linux Package Manager (Pacman).
@@ -144,7 +146,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f pacman.lang
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_bindir}/cleanupdelta
 %attr(755,root,root) %{_bindir}/makepkg
 %attr(755,root,root) %{_bindir}/makepkg-template
 %attr(755,root,root) %{_bindir}/pacman
@@ -152,7 +153,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/pacman-db-upgrade
 %attr(755,root,root) %{_bindir}/pacman-key
 %attr(755,root,root) %{_bindir}/pacman-vercmp
-%attr(755,root,root) %{_bindir}/pkgdelta
 %attr(755,root,root) %{_bindir}/repo-add
 %attr(755,root,root) %{_bindir}/repo-elephant
 %attr(755,root,root) %{_bindir}/repo-remove
@@ -161,6 +161,7 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pacman.conf
 %{_datadir}/makepkg
 %{_datadir}/pacman
+%{_npkgconfigdir}/libmakepkg.pc
 %{_mandir}/man1/makepkg-template.1*
 %{_mandir}/man5/BUILDINFO.5*
 %{_mandir}/man5/PKGBUILD.5*
@@ -169,15 +170,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/pacman.conf.5*
 %{_mandir}/man8/makepkg.8*
 %{_mandir}/man8/pacman.8*
+%{_mandir}/man8/pacman-conf.8*
 %{_mandir}/man8/pacman-key.8*
 %{_mandir}/man8/pacman-vercmp.8*
-%{_mandir}/man8/pkgdelta.8*
 %{_mandir}/man8/repo-add.8*
 %{_mandir}/man8/repo-remove.8*
 
 %files -n bash-completion-alpm
 %defattr(644,root,root,755)
-/etc/bash_completion.d/pacman
+%{bash_compdir}/makepkg
+%{bash_compdir}/pacman
+%{bash_compdir}/pacman-key
 
 %files -n zsh-completion-alpm
 %defattr(644,root,root,755)
@@ -187,7 +190,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS NEWS README
 %attr(755,root,root) %{_libdir}/libalpm.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libalpm.so.11
+%attr(755,root,root) %ghost %{_libdir}/libalpm.so.12
 
 %files devel
 %defattr(644,root,root,755)
