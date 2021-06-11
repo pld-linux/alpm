@@ -1,28 +1,34 @@
 Summary:	Pacman - simple library-based package manager (from Arch Linux)
 Summary(pl.UTF-8):	Pacman - prosty, oparty na bibliotece zarządca pakietów (z Arch Linuksa)
 Name:		alpm
-Version:	5.2.2
+Version:	6.0.0
 Release:	0.1
 License:	GPL v2+
 Group:		Libraries
-Source0:	https://sources.archlinux.org/other/pacman/pacman-%{version}.tar.gz
-# Source0-md5:	3a9b078a83996a3272844807b91959c6
+Source0:	https://sources.archlinux.org/other/pacman/pacman-%{version}.tar.xz
+# Source0-md5:	d68ce8f9cc69fb58d2ee3a932b9df6d5
 URL:		https://www.archlinux.org/pacman/
 BuildRequires:	bash >= 4.4.0
-BuildRequires:	autoconf >= 2.64
-BuildRequires:	automake >= 1:1.11
-BuildRequires:	curl-devel >= 7.32.0
+BuildRequires:	bash-completion-devel >= 2.0
+BuildRequires:	curl-devel >= 7.55.0
+BuildRequires:	doxygen
+BuildRequires:	file >= 5.38
 BuildRequires:	gettext-devel >= 0.13.1
 BuildRequires:	gpgme-devel >= 1.3.0
 BuildRequires:	libarchive-devel >= 3.0.0
-BuildRequires:	libtool >= 2:2
+BuildRequires:	meson >= 0.51
+BuildRequires:	ninja >= 1.5
 BuildRequires:	openssl-devel
 BuildRequires:	perl-base >= 1:5.10.1
 BuildRequires:	pkgconfig
 BuildRequires:	python3 >= 1:3.2
-BuildRequires:	rpmbuild(macros) >= 1.673
+BuildRequires:	rpm-build >= 4.6
+BuildRequires:	rpmbuild(macros) >= 1.736
+BuildRequires:	tar >= 1:1.22
+BuildRequires:	xz
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	bash >= 4.4.0
+Requires:	file >= 5.38
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -39,6 +45,7 @@ Summary(pl.UTF-8):	Bashowe dopełnianie parametrów dla zarządcy pakietów Arch
 Group:		Applications/Shells
 Requires:	%{name} = %{version}-%{release}
 Requires:	bash-completion >= 2.0
+BuildArch:	noarch
 
 %description -n bash-completion-alpm
 Bash completion for Arch Linux Package Manager (Pacman).
@@ -53,6 +60,7 @@ Summary(pl.UTF-8):	Dopełnianie parametrów zarządcy pakietów Arch Linuksa (Pa
 Group:		Applications/Shells
 Requires:	%{name} = %{version}-%{release}
 Requires:	zsh
+BuildArch:	noarch
 
 %description -n zsh-completion-alpm
 ZSH completion for Arch Linux Package Manager (Pacman).
@@ -65,6 +73,8 @@ powłoki ZSH.
 Summary:	Arch Linux Package Management library
 Summary(pl.UTF-8):	Biblioteka Arch Linux Package Management
 Group:		Libraries
+Requires:	curl-libs >= 7.55.0
+Requires:	gpgme >= 1.3.0
 
 %description libs
 Arch Linux Package Management library.
@@ -78,7 +88,7 @@ Summary:	Header files for ALPM library
 Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki ALPM
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
-Requires:	curl-devel >= 7.32.0
+Requires:	curl-devel >= 7.55.0
 Requires:	gpgme-devel >= 1.3.0
 Requires:	libarchive-devel >= 3.0.0
 Requires:	openssl-devel
@@ -105,24 +115,15 @@ Statyczna biblioteka ALPM.
 %setup -q -n pacman-%{version}
 
 %build
-%{__libtoolize}
-%{__aclocal} -I m4
-%{__autoconf}
-%{__autoheader}
-%{__automake}
-%configure \
-	--disable-silent-rules
+%meson build \
+	-Ddoxygen=enabled
 
-%{__make}
+%ninja_build -C build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
-
-# obsoleted by pkg-config
-%{__rm} $RPM_BUILD_ROOT%{_libdir}/libalpm.la
+%ninja_install -C build
 
 # too generic names
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/{,pacman-}vercmp
@@ -132,6 +133,9 @@ rm -rf $RPM_BUILD_ROOT
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/es_419
 # less complete version of eu
 %{__rm} -r $RPM_BUILD_ROOT%{_localedir}/eu_ES
+
+# doxygen junk
+%{__rm} $RPM_BUILD_ROOT%{_mandir}/man3/_*.3*
 
 %find_lang libalpm
 %find_lang pacman
@@ -168,6 +172,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/alpm-hooks.5*
 %{_mandir}/man5/makepkg.conf.5*
 %{_mandir}/man5/pacman.conf.5*
+%{_mandir}/man5/pacman-hooks.5*
 %{_mandir}/man8/makepkg.8*
 %{_mandir}/man8/pacman.8*
 %{_mandir}/man8/pacman-conf.8*
@@ -190,7 +195,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS NEWS README
 %attr(755,root,root) %{_libdir}/libalpm.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libalpm.so.12
+%attr(755,root,root) %ghost %{_libdir}/libalpm.so.13
 
 %files devel
 %defattr(644,root,root,755)
@@ -199,6 +204,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/alpm_list.h
 %{_pkgconfigdir}/libalpm.pc
 %{_mandir}/man3/libalpm.3*
+%{_mandir}/man3/libalpm_*.3*
 
 %files static
 %defattr(644,root,root,755)
