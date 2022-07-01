@@ -1,15 +1,16 @@
 Summary:	Pacman - simple library-based package manager (from Arch Linux)
 Summary(pl.UTF-8):	Pacman - prosty, oparty na bibliotece zarządca pakietów (z Arch Linuksa)
 Name:		alpm
-Version:	6.0.0
+Version:	6.0.1
 Release:	0.1
 License:	GPL v2+
 Group:		Libraries
 Source0:	https://sources.archlinux.org/other/pacman/pacman-%{version}.tar.xz
-# Source0-md5:	d68ce8f9cc69fb58d2ee3a932b9df6d5
+# Source0-md5:	f71e6f06867749735960d0c1d199d375
 URL:		https://www.archlinux.org/pacman/
 BuildRequires:	bash >= 4.4.0
 BuildRequires:	bash-completion-devel >= 2.0
+BuildRequires:	bsdtar
 BuildRequires:	curl-devel >= 7.55.0
 BuildRequires:	doxygen
 BuildRequires:	file >= 5.38
@@ -18,6 +19,7 @@ BuildRequires:	gpgme-devel >= 1.3.0
 BuildRequires:	libarchive-devel >= 3.0.0
 BuildRequires:	meson >= 0.51
 BuildRequires:	ninja >= 1.5
+# or nettle
 BuildRequires:	openssl-devel
 BuildRequires:	perl-base >= 1:5.10.1
 BuildRequires:	pkgconfig
