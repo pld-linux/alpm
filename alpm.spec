@@ -117,15 +117,15 @@ Statyczna biblioteka ALPM.
 %setup -q -n pacman-%{version}
 
 %build
-%meson build \
+%meson \
 	-Ddoxygen=enabled
 
-%ninja_build -C build
+%meson_build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%ninja_install -C build
+%meson_install
 
 # too generic names
 %{__mv} $RPM_BUILD_ROOT%{_bindir}/{,pacman-}vercmp
