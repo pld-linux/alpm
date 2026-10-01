@@ -1,23 +1,26 @@
 Summary:	Pacman - simple library-based package manager (from Arch Linux)
 Summary(pl.UTF-8):	Pacman - prosty, oparty na bibliotece zarządca pakietów (z Arch Linuksa)
 Name:		alpm
-Version:	6.0.2
+Version:	7.1.0
 Release:	0.1
 License:	GPL v2+
 Group:		Libraries
-Source0:	https://sources.archlinux.org/other/pacman/pacman-%{version}.tar.xz
-# Source0-md5:	f2c7e82cc5483a2c90f228a0393f5526
+#Source0Download: https://gitlab.archlinux.org/pacman/pacman/-/releases
+Source0:	https://gitlab.archlinux.org/pacman/pacman/-/archive/v%{version}/pacman-v%{version}.tar.bz2
+# Source0-md5:	39dca2a488235d5b1d83b28f2b3d8579
 URL:		https://www.archlinux.org/pacman/
 BuildRequires:	bash >= 4.4.0
-BuildRequires:	bash-completion-devel >= 2.0
+BuildRequires:	bash-completion-devel >= 1:2.0
 BuildRequires:	bsdtar
 BuildRequires:	curl-devel >= 7.55.0
 BuildRequires:	doxygen
 BuildRequires:	file >= 5.38
+BuildRequires:	gcc >= 5:3.2
 BuildRequires:	gettext-devel >= 0.13.1
-BuildRequires:	gpgme-devel >= 1.3.0
+BuildRequires:	gpgme-devel >= 1.18.0
 BuildRequires:	libarchive-devel >= 3.0.0
-BuildRequires:	meson >= 0.51
+BuildRequires:	libseccomp-devel
+BuildRequires:	meson >= 0.61
 BuildRequires:	ninja >= 1.5
 # or nettle
 BuildRequires:	openssl-devel
@@ -76,7 +79,7 @@ Summary:	Arch Linux Package Management library
 Summary(pl.UTF-8):	Biblioteka Arch Linux Package Management
 Group:		Libraries
 Requires:	curl-libs >= 7.55.0
-Requires:	gpgme >= 1.3.0
+Requires:	gpgme >= 1.18.0
 
 %description libs
 Arch Linux Package Management library.
@@ -91,8 +94,9 @@ Summary(pl.UTF-8):	Pliki nagłówkowe biblioteki ALPM
 Group:		Development/Libraries
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:	curl-devel >= 7.55.0
-Requires:	gpgme-devel >= 1.3.0
+Requires:	gpgme-devel >= 1.18.0
 Requires:	libarchive-devel >= 3.0.0
+Requires:	libseccomp-devel
 Requires:	openssl-devel
 
 %description devel
@@ -114,7 +118,7 @@ Static ALPM library.
 Statyczna biblioteka ALPM.
 
 %prep
-%setup -q -n pacman-%{version}
+%setup -q -n pacman-v%{version}
 
 %build
 %meson \
@@ -165,6 +169,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/testpkg
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/makepkg.conf
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/pacman.conf
+%dir %{_sysconfdir}/makepkg.conf.d
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/makepkg.conf.d/fortran.conf
+%config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/makepkg.conf.d/rust.conf
 %{_datadir}/makepkg
 %{_datadir}/pacman
 %{_npkgconfigdir}/libmakepkg.pc
@@ -174,6 +181,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man5/alpm-hooks.5*
 %{_mandir}/man5/makepkg.conf.5*
 %{_mandir}/man5/pacman.conf.5*
+%{_mandir}/man8/pacman-db-upgrade.8*
 %{_mandir}/man5/pacman-hooks.5*
 %{_mandir}/man8/makepkg.8*
 %{_mandir}/man8/pacman.8*
@@ -182,6 +190,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man8/pacman-vercmp.8*
 %{_mandir}/man8/repo-add.8*
 %{_mandir}/man8/repo-remove.8*
+%{_mandir}/man8/testpkg.8*
 
 %files -n bash-completion-alpm
 %defattr(644,root,root,755)
@@ -196,12 +205,12 @@ rm -rf $RPM_BUILD_ROOT
 %files libs -f libalpm.lang
 %defattr(644,root,root,755)
 %doc AUTHORS NEWS README
-%attr(755,root,root) %{_libdir}/libalpm.so.*.*.*
-%attr(755,root,root) %ghost %{_libdir}/libalpm.so.13
+%{_libdir}/libalpm.so.*.*.*
+%ghost %{_libdir}/libalpm.so.16
 
 %files devel
 %defattr(644,root,root,755)
-%attr(755,root,root) %{_libdir}/libalpm.so
+%{_libdir}/libalpm.so
 %{_includedir}/alpm.h
 %{_includedir}/alpm_list.h
 %{_pkgconfigdir}/libalpm.pc
